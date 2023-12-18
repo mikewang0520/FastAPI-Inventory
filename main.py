@@ -1,5 +1,5 @@
 from enum import Enum
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -26,3 +26,9 @@ items = {
 @app.get("/")
 def index() -> dict[str, dict[int, Item]]:
     return {"items": items}
+
+@app.get("/items/{item_id}")
+def query_item_by_id(item_id: int) -> Item:
+    if item_id not in items:
+        raise HTTPException(status_code=404, detail=f"Item with {item_id = } not found")
+    return items[item_id]
